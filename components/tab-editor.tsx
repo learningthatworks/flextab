@@ -1,45 +1,37 @@
 "use client"
-
-import type React from "react"
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ColorPicker } from "./color-picker"
 import { Slider } from "./slider"
-import { LoremIpsum } from "lorem-ipsum"
-import {
-  Maximize2,
-  Code,
-  Eye,
-  X,
-  Settings,
-  ChevronRight,
-  ChevronLeft,
-  ChevronDown,
-  ChevronUp,
-  Clipboard,
-} from "lucide-react"
+import { Maximize2, ChevronDown, ChevronUp, Clipboard } from "lucide-react"
 import { Switch } from "@/components/ui/switch"
 import { Dialog, DialogContent, DialogDescription } from "@/components/ui/dialog"
 import { Resizable } from "re-resizable"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import Link from "next/link"
 
-const lorem = new LoremIpsum({
-  sentencesPerParagraph: {
-    max: 8,
-    min: 4,
-  },
-  wordsPerSentence: {
-    max: 16,
-    min: 4,
-  },
-})
+const generatePlaceholderText = (paragraphs: number): string => {
+  const loremParagraphs = [
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+    "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+    "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.",
+    "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores.",
+  ]
+
+  let result = ""
+  for (let i = 0; i < paragraphs; i++) {
+    result += loremParagraphs[i % loremParagraphs.length] + "\n"
+  }
+  return result
+}
 
 interface Tab {
   title: string
@@ -49,9 +41,9 @@ interface Tab {
 
 export default function TabEditor() {
   const [tabs, setTabs] = useState<Tab[]>([
-    { title: "Tab 1", content: lorem.generateParagraphs(2), youtubeLink: "" },
-    { title: "Tab 2", content: lorem.generateParagraphs(2), youtubeLink: "" },
-    { title: "Tab 3", content: lorem.generateParagraphs(2), youtubeLink: "" },
+    { title: "Tab 1", content: generatePlaceholderText(2), youtubeLink: "" },
+    { title: "Tab 2", content: generatePlaceholderText(2), youtubeLink: "" },
+    { title: "Tab 3", content: generatePlaceholderText(2), youtubeLink: "" },
   ])
   const [activeTab, setActiveTab] = useState("0")
   const [tabBgColor, setTabBgColor] = useState("#264180")
@@ -138,7 +130,7 @@ export default function TabEditor() {
   }
 
   const addTab = () => {
-    setTabs([...tabs, { title: `Tab ${tabs.length + 1}`, content: lorem.generateParagraphs(2), youtubeLink: "" }])
+    setTabs([...tabs, { title: `Tab ${tabs.length + 1}`, content: generatePlaceholderText(2), youtubeLink: "" }])
   }
 
   const removeTab = () => {
@@ -156,7 +148,7 @@ export default function TabEditor() {
     if (newCount > tabs.length) {
       const newTabs = [...tabs]
       for (let i = tabs.length; i < newCount; i++) {
-        newTabs.push({ title: `Tab ${i + 1}`, content: lorem.generateParagraphs(2), youtubeLink: "" })
+        newTabs.push({ title: `Tab ${i + 1}`, content: generatePlaceholderText(2), youtubeLink: "" })
       }
       setTabs(newTabs)
     } else if (newCount < tabs.length) {
@@ -548,7 +540,7 @@ export default function TabEditor() {
             color: ${tabContentTextColor};
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.3s ease-out;
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
             padding: 0 ${tabContentPadding}px;
             width: 100%;
         }
@@ -609,7 +601,7 @@ export default function TabEditor() {
             (tab, index) => `
         <input type="radio" name="accordion" class="accordion-select" id="tab${index + 1}" ${
           index === 0 ? "checked" : ""
-        } onchange="this.nextElementSibling.nextElementSibling.style.maxHeight = this.checked ? this.nextElementSibling.nextElementSibling.scrollHeight + 'px' : '0';">
+        }>
         <div class="accordion-title"><span>${tab.title}</span></div>
         <div class="accordion-content">
             ${tab.content
@@ -637,9 +629,32 @@ export default function TabEditor() {
           )
           .join("")}
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const accordionSelects = document.querySelectorAll('.accordion-select');
+            accordionSelects.forEach(select => {
+                select.addEventListener('change', function() {
+                    const content = this.nextElementSibling.nextElementSibling;
+                    if (this.checked) {
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                    } else {
+                        content.style.maxHeight = '0';
+                    }
+                    
+                    // Close other tabs
+                    accordionSelects.forEach(otherSelect => {
+                        if (otherSelect !== this) {
+                            otherSelect.checked = false;
+                            otherSelect.nextElementSibling.nextElementSibling.style.maxHeight = '0';
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 </body>
 </html>
-    `
+`
           : `
 <!DOCTYPE html>
 <html lang="en">
@@ -883,8 +898,7 @@ export default function TabEditor() {
                 newContent.style.backgroundColor = '${tabContentBgColor}';
               }
             });
-          }, 210);
-        }
+          }, 210);        }
 
         // Update tab styles
         const tabLabels = document.querySelectorAll('.tab-label');
@@ -1002,17 +1016,6 @@ export default function TabEditor() {
     setOpenAccordionItems((prev) => (prev.length === allItems.length ? [] : allItems))
   }
 
-  const handleAccordionAnimation = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const accordionContent = event.target.nextElementSibling?.nextElementSibling as HTMLElement
-    if (accordionContent) {
-      if (event.target.checked) {
-        accordionContent.style.maxHeight = accordionContent.scrollHeight + "px"
-      } else {
-        accordionContent.style.maxHeight = "0"
-      }
-    }
-  }
-
   return (
     <div className="w-full p-4">
       <h1 className="text-2xl font-bold mb-4">Tab Editor</h1>
@@ -1025,8 +1028,10 @@ export default function TabEditor() {
         </Button>
         {isMenuOpen && (
           <div className="mt-2 p-4 border rounded">
-            {/* Add your menu items here */}
-            <p>Menu items go here</p>
+            <p className="mb-2">v2.4</p>
+            <Link href="/about" className="text-blue-500 hover:underline">
+              About
+            </Link>
           </div>
         )}
       </div>
@@ -1254,7 +1259,7 @@ export default function TabEditor() {
             <CardHeader>
               <CardTitle className="flex justify-between items-center">
                 Style Tabs
-                <Button onClick={toggleAllAccordionItems} variant="outline" size="sm" className="ml-2">
+                <Button onClick={toggleAllAccordionItems} variant="outline" size="sm" className="ml-2 bg-transparent">
                   {openAccordionItems.length === 4 ? (
                     <>
                       <ChevronUp className="w-4 h-4 mr-2" />
@@ -1284,7 +1289,6 @@ export default function TabEditor() {
                         <Label className="text-base font-semibold">Themes</Label>
                         <RadioGroup
                           value={selectedTheme}
-                          onValueChange
                           onValueChange={(value: "custom" | "light" | "dark") => {
                             if (value === "light" || value === "dark") {
                               applyTheme(value)
@@ -1578,4 +1582,3 @@ const ResizablePreviewModal = ({ isOpen, onClose, content }) => {
     </Dialog>
   )
 }
-

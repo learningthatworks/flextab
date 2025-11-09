@@ -1,7 +1,9 @@
-"use client"
+import TabEditor from "@/components/tab-editor"
 
-import Home from "../page"
-
-export default function SyntheticV0PageForDeployment() {
-  return <Home />
+export default function Home() {
+  return (
+    <main className="min-h-screen bg-background">
+      <TabEditor />
+    </main>
+  )
 }

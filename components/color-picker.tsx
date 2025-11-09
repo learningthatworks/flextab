@@ -9,17 +9,30 @@ import { Input } from "@/components/ui/input"
 interface ColorPickerProps {
   color: string
   onChange: (color: string) => void
+  disabled?: boolean
 }
 
 /**
  * ColorPicker component for selecting and inputting color values
  * @param {ColorPickerProps} props - The props for the ColorPicker component
  */
-export function ColorPicker({ color, onChange }: ColorPickerProps) {
+export function ColorPicker({ color, onChange, disabled = false }: ColorPickerProps) {
   return (
     <div className="flex items-center space-x-2">
-      <Input type="color" value={color} onChange={(e) => onChange(e.target.value)} className="w-10 h-10 p-0 border-0" />
-      <Input type="text" value={color} onChange={(e) => onChange(e.target.value)} className="flex-grow" />
+      <Input
+        type="color"
+        value={color}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-10 h-10 p-0 border-0"
+        disabled={disabled}
+      />
+      <Input
+        type="text"
+        value={color}
+        onChange={(e) => onChange(e.target.value)}
+        className="flex-grow"
+        disabled={disabled}
+      />
     </div>
   )
 }
