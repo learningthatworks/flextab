@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 import { Analytics } from '@vercel/analytics/next'
+import Script from 'next/script'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -32,6 +33,8 @@ html {
       <body>
         {children}
         <Analytics />
+        {/* Standard footer linking back to sarunasvaitkus.com (one file for every app) */}
+        <Script src="https://sarunasvaitkus.com/assets/js/sv-footer.js" strategy="afterInteractive" data-app="FlexTab" />
       </body>
     </html>
   )
